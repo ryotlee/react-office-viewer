@@ -1,5 +1,5 @@
 {
-  "name": "@ryot/react-office-viewer",
+  "name": "react-office-viewer-next",
   "version": "1.0.0",
   "description": "A React component to preview document of 'pdf,xls,xlsx,docx', which can automatically identify file types.",
   "main": "build/bundle.js",
@@ -24,8 +24,7 @@
     "email": "ryotlee@gmail.com"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   },
   "license": "MIT",
   "dependencies": {
