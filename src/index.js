@@ -4,7 +4,7 @@ import _PdfViewer from './components/PdfViewer'
 import _SheetViewer from './components/SheetViewer'
 import _DocxViewer from './components/DocxViewer'
 import { ALL_FILE_TYPES, getFileTypeFromUploadType } from './utils/utils';
-import getFileTypeFromArrayBuffer from '@yiiran/get-file-type';
+// import getFileTypeFromArrayBuffer from '@yiiran/get-file-type';
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types';
 import styles from "./components/SheetViewer/style.less";
@@ -25,27 +25,33 @@ function WithI18nComp(Comp) {
     }
 }
 function _AutoFormatViewer(props) {
-    const { file: outFile, fileName, timeout } = props;
+    const { file: outFile, fileName, timeout, fileType: inputFileType } = props;
     const [file, setFile] = useState();
     const [fileType, setFileType] = useState('');
     useEffect(() => {
         setFile(outFile);
     }, [outFile])
+
+    useEffect(()=>{
+        setFileType(inputFileType);
+    }, [inputFileType])
+
     useEffect(() => {
-        if (file) {
+        if (file && fileName) {
             if (typeof file === 'string') {
                 try {
                     let req = new XMLHttpRequest();
+                    let blob = null;
                     req.open("GET", file);
-                    req.responseType = "arraybuffer";//arraybuffer blob
+                    req.responseType = "blob";//arraybuffer blob
                     let xhrTimeOut = setTimeout(() => {
                         req.abort();
                     }, timeout)
                     req.onload = function (e) {
                         clearTimeout(xhrTimeOut);
-                        let fileType = getFileTypeFromArrayBuffer(req.response);
-                        setFileType(fileType);
-                        //console.log('fileType', fileType)
+                        blob = req.response;
+                        let file = new File([blob], fileName);
+                        setFile(file);
                     };
                     req.send();
                 } catch (e) {
@@ -57,13 +63,12 @@ function _AutoFormatViewer(props) {
                 setFileType(fileType);
             }
         }
-    }, [file])
-    const onFlieChange = e => {
-        var inputFileObj = e.target.files[0];
-        setFile(inputFileObj);
-    }
+    }, [file, fileName])
+    // const onFlieChange = e => {
+    //     var inputFileObj = e.target.files[0];
+    //     setFile(inputFileObj);
+    // }
     return <>
-        <input type='file' onChange={onFlieChange} />
         <div style={{ position: 'relative' }}>
             {
                 ALL_FILE_TYPES.includes(fileType) ? (<>
